@@ -33,22 +33,50 @@ export default function FormularioProduto({
   const validar = (): boolean => {
     const novosErros: { [chave: string]: string } = {};
 
+    // Validação do nome
     if (!nome.trim()) {
       novosErros.nome = 'Nome é obrigatório';
+    } else if (nome.trim().length < 3) {
+      novosErros.nome = 'Nome deve ter no mínimo 3 caracteres';
+    } else if (nome.trim().length > 100) {
+      novosErros.nome = 'Nome deve ter no máximo 100 caracteres';
     }
 
+    // Validação da descrição
     if (!descricao.trim()) {
       novosErros.descricao = 'Descrição é obrigatória';
+    } else if (descricao.trim().length < 10) {
+      novosErros.descricao = 'Descrição deve ter no mínimo 10 caracteres';
+    } else if (descricao.trim().length > 500) {
+      novosErros.descricao = 'Descrição deve ter no máximo 500 caracteres';
     }
 
+    // Validação da quantidade
     const quantidadeNum = parseInt(quantidade);
-    if (!quantidade || isNaN(quantidadeNum) || quantidadeNum < 0) {
-      novosErros.quantidade = 'Quantidade deve ser um número válido e não negativo';
+    if (!quantidade || quantidade.trim() === '') {
+      novosErros.quantidade = 'Quantidade é obrigatória';
+    } else if (isNaN(quantidadeNum)) {
+      novosErros.quantidade = 'Quantidade deve ser um número válido';
+    } else if (quantidadeNum < 0) {
+      novosErros.quantidade = 'Quantidade não pode ser negativa';
+    } else if (quantidadeNum > 999999) {
+      novosErros.quantidade = 'Quantidade máxima é 999.999 unidades';
+    } else if (!Number.isInteger(quantidadeNum)) {
+      novosErros.quantidade = 'Quantidade deve ser um número inteiro';
     }
 
+    // Validação do preço
     const precoNum = parseFloat(preco);
-    if (!preco || isNaN(precoNum) || precoNum < 0) {
-      novosErros.preco = 'Preço deve ser um número válido e não negativo';
+    if (!preco || preco.trim() === '') {
+      novosErros.preco = 'Preço é obrigatório';
+    } else if (isNaN(precoNum)) {
+      novosErros.preco = 'Preço deve ser um número válido';
+    } else if (precoNum < 0) {
+      novosErros.preco = 'Preço não pode ser negativo';
+    } else if (precoNum === 0) {
+      novosErros.preco = 'Preço deve ser maior que zero';
+    } else if (precoNum > 999999.99) {
+      novosErros.preco = 'Preço máximo é R$ 999.999,99';
     }
 
     setErros(novosErros);
