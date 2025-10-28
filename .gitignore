@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+#files
+overzone-code-challenge-estoque-simples.pdf
+
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
