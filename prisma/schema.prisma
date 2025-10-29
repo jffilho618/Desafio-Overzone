@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+// Modelo de Usuário
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senhaHash String   @map("senha_hash")
+  tipo      TipoUsuario @default(CLIENTE)
+  criadoEm  DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  // Relacionamentos
+  pedidos   Pedido[]
+
+  @@map("usuarios")
+}
+
+// Modelo de Produto
+model Produto {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  descricao String
+  quantidade Int     @default(0)
+  preco     Float
+  criadoEm  DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  // Relacionamentos
+  itensPedido ItemPedido[]
+
+  @@map("produtos")
+}
+
+// Modelo de Pedido
+model Pedido {
+  id        String   @id @default(uuid())
+  usuarioId String   @map("usuario_id")
+  total     Float
+  data      DateTime @default(now())
+  status    StatusPedido @default(PENDENTE)
+  criadoEm  DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  // Relacionamentos
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+  itens   ItemPedido[]
+
+  @@map("pedidos")
+}
+
+// Modelo de Item do Pedido (Junction Table)
+model ItemPedido {
+  id            String   @id @default(uuid())
+  pedidoId      String   @map("pedido_id")
+  produtoId     String   @map("produto_id")
+  quantidade    Int
+  precoUnitario Float    @map("preco_unitario")
+  subtotal      Float
+  criadoEm      DateTime @default(now()) @map("criado_em")
+
+  // Relacionamentos
+  pedido  Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Restrict)
+
+  @@map("itens_pedido")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum TipoUsuario {
+  ADMIN
+  CLIENTE
+
+  @@map("tipo_usuario")
+}
+
+enum StatusPedido {
+  PENDENTE
+  PROCESSANDO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+
+  @@map("status_pedido")
+}
