@@ -1,14 +1,65 @@
+// ===========================================
+// Página de pedidos do usuário.
+// Lista todos os pedidos realizados pelo usuário logado,
+// buscando os dados via API do back-end.
+// ===========================================
+
+import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/layout/ProtectedRoute';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
-import { useAuth } from '@/contexts/AuthContext';
-import { pedidosMockados } from '@/data/pedidos';
+
+interface ItemPedido {
+  id: string;
+  quantidade: number;
+  precoUnitario: number;
+  subtotal: number;
+  produto: {
+    id: string;
+    nome: string;
+    descricao: string;
+  };
+}
+
+interface Pedido {
+  id: string;
+  total: number;
+  status: string;
+  data: string;
+  criadoEm: string;
+  itens: ItemPedido[];
+}
 
 function PaginaMeusPedidos() {
-  const { usuario } = useAuth();
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
 
-  // Filtra pedidos do usuário logado
-  const pedidosDoUsuario = pedidosMockados.filter((p) => p.usuarioId === usuario?.id);
+  // Busca os pedidos do usuário ao carregar a página
+  useEffect(() => {
+    buscarPedidos();
+  }, []);
+
+  const buscarPedidos = async () => {
+    try {
+      setCarregando(true);
+      setErro(null);
+
+      const resposta = await fetch('/api/pedidos');
+
+      if (!resposta.ok) {
+        throw new Error('Erro ao carregar pedidos');
+      }
+
+      const dados = await resposta.json();
+      setPedidos(dados);
+    } catch (error) {
+      console.error('Erro ao buscar pedidos:', error);
+      setErro('Não foi possível carregar os pedidos');
+    } finally {
+      setCarregando(false);
+    }
+  };
 
   const formatarPreco = (preco: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -29,13 +80,24 @@ function PaginaMeusPedidos() {
 
   const obterCorStatus = (status: string) => {
     const cores: { [key: string]: string } = {
-      pendente: 'bg-yellow-100 text-yellow-800',
-      processando: 'bg-blue-100 text-blue-800',
-      enviado: 'bg-purple-100 text-purple-800',
-      entregue: 'bg-green-100 text-green-800',
-      cancelado: 'bg-red-100 text-red-800',
+      PENDENTE: 'bg-yellow-100 text-yellow-800',
+      PROCESSANDO: 'bg-blue-100 text-blue-800',
+      ENVIADO: 'bg-purple-100 text-purple-800',
+      ENTREGUE: 'bg-green-100 text-green-800',
+      CANCELADO: 'bg-red-100 text-red-800',
     };
     return cores[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  const traduzirStatus = (status: string) => {
+    const traducoes: { [key: string]: string } = {
+      PENDENTE: 'Pendente',
+      PROCESSANDO: 'Processando',
+      ENVIADO: 'Enviado',
+      ENTREGUE: 'Entregue',
+      CANCELADO: 'Cancelado',
+    };
+    return traducoes[status] || status;
   };
 
   return (
@@ -52,7 +114,26 @@ function PaginaMeusPedidos() {
               <p className="text-gray-600 mt-1">Acompanhe seus pedidos realizados</p>
             </div>
 
-            {pedidosDoUsuario.length === 0 ? (
+            {/* Exibe mensagem de erro se houver */}
+            {erro && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-700">{erro}</p>
+                <button
+                  onClick={buscarPedidos}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
+
+            {/* Exibe loading enquanto carrega */}
+            {carregando && !erro ? (
+              <div className="flex justify-center items-center py-16">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="ml-4 text-gray-600">Carregando pedidos...</p>
+              </div>
+            ) : pedidos.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-12 text-center">
                 <p className="text-xl text-gray-600 mb-4">Você ainda não fez nenhum pedido</p>
                 <a
@@ -64,27 +145,27 @@ function PaginaMeusPedidos() {
               </div>
             ) : (
               <div className="space-y-4">
-                {pedidosDoUsuario.map((pedido) => (
+                {pedidos.map((pedido) => (
                   <div key={pedido.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
                       <div>
-                        <p className="text-sm text-gray-600">Pedido #{pedido.id}</p>
-                        <p className="text-sm text-gray-500">{formatarData(pedido.data)}</p>
+                        <p className="text-sm text-gray-600">Pedido #{pedido.id.substring(0, 8)}</p>
+                        <p className="text-sm text-gray-500">{formatarData(pedido.criadoEm)}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${obterCorStatus(pedido.status)}`}>
-                        {pedido.status.charAt(0).toUpperCase() + pedido.status.slice(1)}
+                        {traduzirStatus(pedido.status)}
                       </span>
                     </div>
 
                     <div className="p-6">
                       <div className="space-y-3 mb-4">
-                        {pedido.itens.map((item, idx) => (
-                          <div key={idx} className="flex justify-between text-sm">
+                        {pedido.itens.map((item) => (
+                          <div key={item.id} className="flex justify-between text-sm">
                             <span className="text-gray-700">
                               {item.quantidade}x {item.produto.nome}
                             </span>
                             <span className="font-medium text-gray-900">
-                              {formatarPreco(item.produto.preco * item.quantidade)}
+                              {formatarPreco(item.subtotal)}
                             </span>
                           </div>
                         ))}

@@ -1,15 +1,20 @@
+// ===========================================
+// Página do carrinho de compras.
+// Exibe itens do carrinho e permite finalizar a compra,
+// criando um pedido via API e atualizando o estoque.
+// ===========================================
+
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
 import Header from '@/components/layout/Header';
 import { useCarrinho } from '@/contexts/CarrinhoContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Pedido } from '@/types/pedido';
-import { pedidosMockados } from '@/data/pedidos';
 
 export default function PaginaCarrinho() {
   const router = useRouter();
   const { itens, valorTotal, removerDoCarrinho, atualizarQuantidade, limparCarrinho } = useCarrinho();
-  const { estaAutenticado, usuario } = useAuth();
+  const { estaAutenticado } = useAuth();
+  const [processando, setProcessando] = useState(false);
 
   const formatarPreco = (preco: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -18,44 +23,61 @@ export default function PaginaCarrinho() {
     }).format(preco);
   };
 
-  const aoFinalizarCompra = () => {
+  // Finaliza a compra criando um pedido via API
+  const aoFinalizarCompra = async () => {
     if (!estaAutenticado) {
       router.push('/login?redirect=/carrinho');
       return;
     }
 
-    // Validação: carrinho não pode estar vazio
     if (itens.length === 0) {
       alert('Erro: O carrinho está vazio!');
       return;
     }
 
-    // Validação: verifica se há produtos com quantidade inválida
     const produtoInvalido = itens.find((item) => item.quantidade <= 0);
     if (produtoInvalido) {
       alert('Erro: Há produtos com quantidade inválida no carrinho!');
       return;
     }
 
-    // Simula criação do pedido com UUID
-    const novoPedido: Pedido = {
-      id: uuidv4(),
-      usuarioId: usuario!.id,
-      itens: [...itens],
-      total: valorTotal,
-      data: new Date().toISOString(),
-      status: 'processando'
-    };
+    try {
+      setProcessando(true);
 
-    // Adiciona o pedido aos mockados (simulação)
-    pedidosMockados.push(novoPedido);
+      // Prepara os itens no formato esperado pela API
+      const itensPedido = itens.map((item) => ({
+        produtoId: item.produto.id,
+        quantidade: item.quantidade,
+      }));
 
-    // Limpa o carrinho
-    limparCarrinho();
+      // Cria o pedido via API
+      const resposta = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itens: itensPedido,
+        }),
+      });
 
-    // Redireciona para pedidos
-    alert('Pedido realizado com sucesso!');
-    router.push('/meus-pedidos');
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        alert(dados.error || 'Erro ao criar pedido');
+        return;
+      }
+
+      // Limpa o carrinho e redireciona
+      limparCarrinho();
+      alert('Pedido realizado com sucesso!');
+      router.push('/meus-pedidos');
+    } catch (error) {
+      console.error('Erro ao finalizar compra:', error);
+      alert('Erro ao finalizar compra. Tente novamente.');
+    } finally {
+      setProcessando(false);
+    }
   };
 
   return (
@@ -150,9 +172,10 @@ export default function PaginaCarrinho() {
 
               <button
                 onClick={aoFinalizarCompra}
-                className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-lg"
+                disabled={processando}
+                className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Finalizar Compra
+                {processando ? 'Processando...' : 'Finalizar Compra'}
               </button>
 
               <button
