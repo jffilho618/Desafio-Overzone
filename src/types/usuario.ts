@@ -1,5 +1,5 @@
-// Tipos de usuário no sistema
-export type TipoUsuario = 'admin' | 'cliente';
+// Tipos de usuário no sistema (deve corresponder ao enum do Prisma)
+export type TipoUsuario = 'ADMIN' | 'CLIENTE';
 
 // Interface que representa um usuário
 export interface Usuario {

@@ -46,7 +46,7 @@ export default function Sidebar() {
           </Link>
 
           {/* Link Estoque - Apenas Admin */}
-          {usuario?.tipo === 'admin' && (
+          {usuario?.tipo === 'ADMIN' && (
             <Link
               href="/estoque"
               className={`block px-4 py-3 rounded-md transition-colors ${
@@ -82,7 +82,7 @@ export default function Sidebar() {
             <p className="text-xs text-gray-500 mb-1">Logado como:</p>
             <p className="text-sm font-medium text-gray-900">{usuario?.nome}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {usuario?.tipo === 'admin' ? 'Administrador' : 'Cliente'}
+              {usuario?.tipo === 'ADMIN' ? 'Administrador' : 'Cliente'}
             </p>
           </div>
         </div>
