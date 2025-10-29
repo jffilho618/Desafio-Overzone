@@ -17,12 +17,10 @@ export default function CardProduto({ produto }: CardProdutoProps) {
 
   const aoAdicionarAoCarrinho = () => {
     adicionarAoCarrinho(produto, 1);
-    // Feedback visual (toast) poderia ser adicionado aqui
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Imagem do produto (placeholder) */}
       <div className="bg-gradient-to-br from-blue-100 to-indigo-100 h-48 flex items-center justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
