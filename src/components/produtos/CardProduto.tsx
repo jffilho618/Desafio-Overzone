@@ -1,5 +1,5 @@
-import { Produto } from '@/types/product';
-import { useCarrinho } from '@/contexts/CarrinhoContext';
+import { Produto } from "@/types/product";
+import { useCarrinho } from "@/contexts/CarrinhoContext";
 
 interface CardProdutoProps {
   produto: Produto;
@@ -9,9 +9,9 @@ export default function CardProduto({ produto }: CardProdutoProps) {
   const { adicionarAoCarrinho } = useCarrinho();
 
   const formatarPreco = (preco: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(preco);
   };
 
@@ -21,7 +21,7 @@ export default function CardProduto({ produto }: CardProdutoProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="bg-gradient-to-br from-blue-100 to-indigo-100 h-48 flex items-center justify-center">
+      <div className="bg-linear-to-br from-blue-100 to-indigo-100 h-48 flex items-center justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-20 w-20 text-blue-400"
@@ -72,7 +72,7 @@ export default function CardProduto({ produto }: CardProdutoProps) {
           disabled={produto.quantidade === 0}
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
         >
-          {produto.quantidade > 0 ? 'Adicionar ao Carrinho' : 'Indisponível'}
+          {produto.quantidade > 0 ? "Adicionar ao Carrinho" : "Indisponível"}
         </button>
       </div>
     </div>

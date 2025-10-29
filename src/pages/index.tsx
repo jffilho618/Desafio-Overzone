@@ -1,30 +1,39 @@
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import CardProduto from '@/components/produtos/CardProduto';
-import { Produto } from '@/types/product';
+// ===========================================
+// Página inicial da loja Overzone.
+// Exibe o catálogo de produtos disponíveis, buscando-os da API.
+// Inclui estados de carregamento e tratamento de erros.
+// ===========================================
+
+import { useState, useEffect } from "react";
+import Header from "@/components/layout/Header";
+import CardProduto from "@/components/produtos/CardProduto";
+import { Produto } from "@/types/product";
 
 export default function PaginaInicial() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
+  // Busca os produtos disponíveis ao carregar a página
   useEffect(() => {
     const buscarProdutos = async () => {
       try {
         setCarregando(true);
         setErro(null);
 
-        const resposta = await fetch('/api/produtos');
+        const resposta = await fetch("/api/produtos");
 
         if (!resposta.ok) {
-          throw new Error('Erro ao carregar produtos');
+          throw new Error("Erro ao carregar produtos");
         }
 
         const dados = await resposta.json();
         setProdutos(dados);
       } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-        setErro('Não foi possível carregar os produtos. Tente novamente mais tarde.');
+        console.error("Erro ao buscar produtos:", error);
+        setErro(
+          "Não foi possível carregar os produtos. Tente novamente mais tarde."
+        );
       } finally {
         setCarregando(false);
       }
@@ -37,7 +46,7 @@ export default function PaginaInicial() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
+      <section className="bg-linear-to-br from-blue-600 to-indigo-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Bem-vindo à Overzone
@@ -53,12 +62,11 @@ export default function PaginaInicial() {
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Nossos Produtos
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900">Nossos Produtos</h2>
           {!carregando && !erro && (
             <p className="text-gray-600">
-              {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'} disponíveis
+              {produtos.length} {produtos.length === 1 ? "produto" : "produtos"}{" "}
+              disponíveis
             </p>
           )}
         </div>
@@ -80,7 +88,9 @@ export default function PaginaInicial() {
           </div>
         ) : produtos.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">Nenhum produto disponível no momento.</p>
+            <p className="text-gray-500 text-lg">
+              Nenhum produto disponível no momento.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
