@@ -32,13 +32,22 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
 
+# prisma
+prisma/*.db
+prisma/*.db-journal
+
 #files
 overzone-code-challenge-estoque-simples.pdf
+*.png
+*.html
 
+# claude
+.claude
 
 # typescript
 *.tsbuildinfo
