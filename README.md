@@ -1,8 +1,33 @@
 # Sistema E-commerce Overzone
 
+![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8)
+![Prisma](https://img.shields.io/badge/Prisma-6-2d3748)
+![License](https://img.shields.io/badge/license-Educational-yellow)
+
 Sistema completo de e-commerce com gerenciamento de estoque, autenticação de usuários e processamento de pedidos, desenvolvido como parte do Desafio Técnico da Overzone.
 
+## Índice
+
+- [Visão Geral](#visão-geral)
+- [Quick Start](#quick-start)
+- [Atendimento ao Desafio Técnico](#atendimento-ao-desafio-técnico)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Funcionalidades Implementadas](#funcionalidades-implementadas)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Instalação e Execução](#instalação-e-execução)
+- [Comandos Disponíveis](#comandos-disponíveis)
+- [Guia de Uso](#guia-de-uso)
+- [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
+- [APIs Disponíveis](#apis-disponíveis)
+- [Troubleshooting](#troubleshooting)
+- [Tecnologias e Conceitos Aplicados](#tecnologias-e-conceitos-aplicados)
+
 ## Visão Geral
+
+Projeto desenvolvido como resposta ao [Desafio Técnico - Gerenciador de Estoque Básico](overzone-code-challenge-estoque-simples.pdf) da Overzone.
 
 O projeto implementa um e-commerce full-stack com:
 
@@ -12,11 +37,54 @@ O projeto implementa um e-commerce full-stack com:
 - Autenticação JWT com cookies httpOnly
 - Sistema completo de gestão de produtos, pedidos e usuários
 
+## Quick Start
+
+```bash
+# Clone e inicie com Docker (recomendado)
+git clone https://github.com/jffilho618/Desafio-Overzone.git
+cd Desafio-Overzone
+docker-compose up
+```
+
+Acesse: http://localhost:3000
+
+**Credenciais de teste:**
+
+- Admin: `admin@overzone.com` / `admin123`
+- Cliente: `joao@email.com` / `senha123`
+
+## Atendimento ao Desafio Técnico
+
+### Requisitos Mínimos (Obrigatório)
+
+- Criar produto (nome, quantidade e preço)
+- Listar todos os produtos cadastrados
+- Deletar produto existente
+- Persistência de dados (SQLite com Prisma, além do solicitado)
+
+### Diferenciais Implementados
+
+- Editar produto (atualizar nome, quantidade ou preço)
+- Banco de dados SQLite com API completa
+- Next.js com API Routes (ponto extra)
+- Tratamento de erros robusto
+- Interface estilizada com Tailwind CSS
+- Boas práticas de versionamento (commits claros)
+
+### Funcionalidades Extras (Além do Pedido)
+
+- Sistema completo de autenticação JWT
+- Sistema de pedidos com carrinho de compras
+- Controle automático de estoque
+- Landing page (Simples)
+- Docker para deploy simplificado
+- Documentação completa
+
 ## Tecnologias Utilizadas
 
 ### Frontend
 
-- **Next.js 16** - Framework React com SSR e API Routes
+- **Next.js 15** - Framework React com SSR e API Routes
 - **React 19** - Biblioteca para construção de interfaces
 - **TypeScript 5** - Tipagem estática para JavaScript
 - **Tailwind CSS 4** - Framework CSS utilitário
@@ -463,6 +531,29 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
+### Docker: Erro de permissão no volume
+
+Linux/Mac:
+
+```bash
+sudo chown -R $USER:$USER prisma/
+```
+
+### Docker: Container não inicia
+
+Reconstruir sem cache:
+
+```bash
+docker-compose down -v
+docker-compose up --build
+```
+
+### Docker: Ver logs de erro
+
+```bash
+docker-compose logs -f
+```
+
 ## Tecnologias e Conceitos Aplicados
 
 ### Frontend
@@ -497,17 +588,12 @@ npm install
 - Proteção contra XSS
 - Validação de entrada
 
-## Melhorias Futuras
+## Contato e Suporte
 
-- Implementar testes automatizados (Jest, React Testing Library)
-- Adicionar rate limiting nas APIs
-- Implementar paginação nas listagens
-- Upload de imagens de produtos
-- Sistema de notificações
-- Integração com gateway de pagamento
-- Migração para PostgreSQL em produção
-- Implementar 2FA (Two-Factor Authentication)
-- Dashboard de analytics para admin
+Para dúvidas sobre o projeto:
+
+- Abra uma [issue no GitHub](https://github.com/jffilho618/Desafio-Overzone/issues)
+- Entre em contato: jffilho618@gmail.com
 
 ## Licença
 
